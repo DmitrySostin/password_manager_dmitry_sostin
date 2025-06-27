@@ -1,62 +1,118 @@
 import sqlite3
 import string
 import secrets
+import pyperclip
+from typing import Optional
 from crypto import encription, decription
 from generator import generator
+from pycparser.ply.yacc import restart
 from validation import validate_password
+from db_crate import add_data, search
+from copy import write
 
-
-
-
-
-# Добавление в базу данных User, Pass
-def add_data(user_name, user_pass):
-    password, salt = encription(user_pass)
-    db = sqlite3.connect('pwr_db.db')
-    cursor = db.cursor()
-    cursor.execute('''CREATE TABLE IF NOT EXISTS users
-                    (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                    name TEXT, 
-                    pass TEXT,
-                    salt TEXT
-                    )''')
-    cursor.execute("INSERT INTO users (name, pass, salt) VALUES (:name, :pass, :salt)", {"name": user_name, "pass": password, "salt": salt})
-    db.commit()
-    db.close()
-
-# Поиск по базе данных если есть совпвдение то возвращаем картеж
-# иначе вавращаем None
-def search(user_pass):
-    db = sqlite3.connect('pwr_db.db')
-    cursor = db.cursor()
-    cursor.execute("SELECT * FROM users")
-    res = cursor.fetchall()
-    #print(res)
-    db.commit()
-    db.close()
-    for data in res:
-        #print(data[1])
-        if decription(user_pass, data[2], data[3]):# пароль , хешированный пароль, соль
-            return data[0]
-
-    #return res
-
-
-user = "sj4gysn1"
-pas = "sj4gysn1"
-rang = 'midle'
+#user = "sj4gysn1"
+#pas = "sj4gysn1"
+#rang = 'midle'
 
 # проверка надежности пароля
-if validate_password(pas): print(f"Пароль ( {pas} ) НЕ надежный!")
-else:  print(f"Пароль ( {pas} ) надежный!")
+#if validate_password(pas): print(f"Пароль ( {pas} ) НЕ надежный!")
+#else:  print(f"Пароль ( {pas} ) надежный!")
 
 # генератор паролей 4 уровня (litle, midle, top, hard)
 # print(generator(10, rang))
 
 # Добавлеине пароля в БД
-# add_data(user, pas)
+# add_data(pas)
 
 
 # Поиск по паролю
-# test = search(pas)
-# print(f'Совпвдение с паролем №{test}')
+#test = search(pas)
+#print(f'Совпвдение с паролем №{test}')
+
+def get_complexity() -> Optional[str]:
+    rang = input(">>> (L)itle, (M)midle, (T)op, (H)ard pass:\n<<< ").lower()
+    if rang == "l":
+        return "litle"
+    elif rang == "m":
+        return "midle"
+    elif rang == "t":
+        return "top"
+    elif rang == "h":
+        return "hard"
+    else:
+        print(">>> Incorrect choice of difficulty! Try again.")
+        return None
+
+def get_length() -> int:
+    while True:
+        try:
+            length = int(input(">>> Enter the desired number of characters (min 6 symbols):\n<<< "))
+            return max(6, length)
+        except ValueError:
+            print(">>> Pleace enter number!")
+
+def collection_generator():
+    complexity = None
+    while complexity is None:
+        complexity = get_complexity()
+
+    length = get_length()
+    password = generator(length, complexity)
+    print(f">>> Your pass >>>-{password}-<<<")
+    copyrite = input(">>> Copy this password (Y)es/(N)o ?\n<<< ").lower()
+    if copyrite == "y": write(password)
+    print(f">>> Password >-{password}-< copied to clipboard.")
+
+def collection_add():
+    rang = input(">>> Adding password to DB.\n>>> Enter your password\n<<< ")
+    if add_data(rang): print(">>> Data added to DB")
+
+def collection_search():
+    rang = input(">>> Search password by DB.\n>>> Enter search password\n<<< ")
+
+    if search(rang): print(f">>> >-{rang}-<\n>>> Such data is in DB")
+    else: print(f">>> >-{rang}-<\n>>> Such data is NOT in DB")
+
+def select_function():
+    key = input(">>> (Q)uit, (G)enerate pass, (S)earch pass, (A)dd pass, (V)alidate, (E)xport:\n<<< ").lower()
+    if key == "q":
+        print(f">>> User complited the programm!!!")
+        exit()
+    elif key == "g":# вызываем сбор для генератора паролей
+        collection_generator()
+    elif key == "s":# Вызываем сбор для поиску по БД
+        collection_search()
+    elif key == "a":# Вызываем сбор для добавления в БД
+        collection_add()
+    elif key == "v":# Вызываем сбор для проверки пароля на вшивость
+        pas = input(">>> Enter password to verify!\n<<< ")
+        if validate_password(pas): print(f"Password >-{pas}-< is strong!")
+        else: print(f"Password >-{pas}-< is not secure!")
+    elif key == "e":# Вызываем сбор для экспорта БД
+        pass
+    else:
+        print(f">>> Unnoung command, try again")
+
+while True:
+    select_function()
+
+
+"""
+while True:
+    key = input(">>> (Q)uit, (G)enerate pass, (S)earch pass, (A)dd pass, (V)alidate:\n<<< ")
+
+    if key.lower() == "q":
+        exit()
+    elif key.lower() == "g":
+        rang = input(">>> (L)itle, (M)midle, (T)op, (H)ard pass:\n<<< ")
+        simmbols = int(input(">>> Enter the desired number of characters (min 6 simbols):\n<<< "))
+        if rang.lower() == "l":  rang = "litle"
+        elif rang.lower() == "m": rang = "midle"
+        elif rang.lower() == "t": rang = "top"
+        elif rang.lower() == "h": rang = "hard"
+        else:
+            key = "g"
+
+        if simmbols < 6: simmbols = 6
+        print(f">>> Your pass >>>{generator(simmbols, rang)}<<<")
+"""

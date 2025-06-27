@@ -5,7 +5,7 @@ import os
 # Преобразуем пароль в ключ
 def encription(password, salt = os.urandom(16)):
       # 16 байт (обязательно сохраните её!)
-    print(password)
+    #print(password)
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),  # Алгоритм хеширования
         length=32,  # Длина выходного ключа (32 байта = 256 бит)
@@ -14,7 +14,7 @@ def encription(password, salt = os.urandom(16)):
     )
 
     pas = password.encode('utf-8')
-    print(pas)
+    #print(pas)
     key = kdf.derive(pas)
     return(key, salt)  # Ключ для хранения в БД
 
