@@ -28,5 +28,5 @@ dmitry.sostin@yandex.ru
 ├── export.py        # Функции экспорта в CSV, JSON, SQL
 ├── generator.py     # Функция генератора паролей с возможностью выбора сложности пароля
 ├── pwr_db.db        # Сама база данных паролей
-├── validatiion.py   # Проверка слозности пароля
-└── README.md # Этот файл
+├── validatiion.py   # Проверка сложности пароля
+└── README.md        # Этот файл
