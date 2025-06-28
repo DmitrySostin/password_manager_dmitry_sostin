@@ -9,6 +9,7 @@ from pycparser.ply.yacc import restart
 from validation import validate_password
 from db_crate import add_data, search
 from copy import write
+from export import export_to_csv, export_to_json, export_to_sql
 
 #user = "sj4gysn1"
 #pas = "sj4gysn1"
@@ -69,9 +70,26 @@ def collection_add():
 
 def collection_search():
     rang = input(">>> Search password by DB.\n>>> Enter search password\n<<< ")
-
     if search(rang): print(f">>> >-{rang}-<\n>>> Such data is in DB")
     else: print(f">>> >-{rang}-<\n>>> Such data is NOT in DB")
+
+def collection_export():
+    rang = None
+    print(">>> Export DB in:")
+    print(">>> (1) Export to CSV (encripted)")
+    print(">>> (2) Export to JSON (encripted)")
+    print(">>> (3) Export to SQL dump")
+    rang = input("<<< ")
+    if rang.isdigit():
+        if int(rang) == 1: export_to_csv("pwr_db.db")
+        elif int(rang) == 2: export_to_json("pwr_db.db")
+        elif int(rang) == 3: export_to_sql("pwr_db.db")
+        else:
+            print(">>> Key 1 to 3\n>>> Try again!")
+            collection_export()
+    else:
+        print(">>> Incorrect input!\n>>> Try again!")
+        collection_export()
 
 def select_function():
     key = input(">>> (Q)uit, (G)enerate pass, (S)earch pass, (A)dd pass, (V)alidate, (E)xport:\n<<< ").lower()
@@ -89,7 +107,7 @@ def select_function():
         if validate_password(pas): print(f"Password >-{pas}-< is strong!")
         else: print(f"Password >-{pas}-< is not secure!")
     elif key == "e":# Вызываем сбор для экспорта БД
-        pass
+        collection_export()
     else:
         print(f">>> Unnoung command, try again")
 

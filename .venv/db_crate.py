@@ -22,7 +22,7 @@ def add_data(user_pass):
 def search(user_pass):
     db = sqlite3.connect('pwr_db.db')
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM users")
+    cursor.execute("SELECT * FROM ")
     res = cursor.fetchall()
     #print(res)
     db.commit()
