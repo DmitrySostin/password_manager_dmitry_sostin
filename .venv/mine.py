@@ -5,7 +5,6 @@ import pyperclip
 from typing import Optional
 from crypto import encription, decription
 from generator import generator
-from pycparser.ply.yacc import restart
 from validation import validate_password
 from db_crate import add_data, search
 from copy import write
